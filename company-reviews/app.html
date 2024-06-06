@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Reviews</title>
+</head>
+<body>
+    <form onsubmit="formSubmit(event)">
+        <label for="comp-name">Company Name:</label>
+        <input type="text" name='comp-name' id="comp-name" required>
+
+        <label for="pros">Pros:</label>
+        <textarea name="pros" id="pros" required></textarea>
+
+        <label for="cons">Cons:</label>
+        <textarea name="cons" id="cons" required></textarea>
+
+        <label for="rating">Rating:</label>
+        <select name="rating" id="rating" required>
+            <option value="">Select a rating</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+
+        
+        <button type="submit">Submit</button>
+    </form>
+    <div id="main-div"></div>
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            axios.get('http://localhost:3000/submit-reviews')
+            .then(res=>{
+                for(i=0;i<res.data.companyData.length;i++){
+                    showonScreen(res.data.companyData[i])
+                }
+            })
+        });
+        function formSubmit(event){
+            event.preventDefault();
+
+            const companyName = document.getElementById('comp-name').value;
+            const pros = document.getElementById('pros').value;
+            const cons = document.getElementById('cons').value;
+            const rating = document.getElementById('rating').value;
+
+            console.log('html---',cons)
+
+            axios.post('http://localhost:3000/submit-reviews', {
+                companyName: companyName,
+                pros: pros,
+                cons: cons,
+                rating: rating
+            })
+            .then(res=>showonScreen(res))
+            
+        }
+        function showonScreen(x){
+            console.log(x)
+            const ex=document.getElementById('main')
+            console.log(ex)
+            const mainDiv=document.getElementById('main-div')
+            const newDiv=document.createElement('div')
+            newDiv.id=`div${x.id}`
+            const head=document.createElement('h2')
+            head.textContent=`${x.companyname}`
+
+            newDiv.appendChild(head)
+            mainDiv.appendChild(newDiv)
+        }
+    </script>
+</body>
+</html>
