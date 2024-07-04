@@ -48,7 +48,7 @@
             const cons = document.getElementById('cons').value;
             const rating = document.getElementById('rating').value;
 
-            console.log('html---',cons)
+            //console.log('html---',cons)
 
             axios.post('http://localhost:3000/submit-reviews', {
                 companyName: companyName,
@@ -56,13 +56,13 @@
                 cons: cons,
                 rating: rating
             })
-            .then(res=>showonScreen(res))
+            .then(res=>showonScreen(res.data.companyData[0]))
             
         }
         function showonScreen(x){
             console.log(x)
             const ex=document.getElementById('main')
-            console.log(ex)
+            //console.log(ex)
             const mainDiv=document.getElementById('main-div')
             const newDiv=document.createElement('div')
             newDiv.id=`div${x.id}`

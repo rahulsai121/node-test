@@ -23,10 +23,11 @@ exports.postcompany = async (req, res) => {
     });
 
     const companyData=await Company.findAll({
+        where:{companyname:companyName},
         include: [Review] // Include the Review model
       })
     
-    res.send({data:companyData})
+    res.send({companyData})
     
       /*.then(comp=>{
         //console.log('company details------------',comp[0].dataValues.reviews)
