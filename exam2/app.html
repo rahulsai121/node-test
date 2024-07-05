@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Create a Post</h2>
+    <form onsubmit="formSubmit(event)">
+        <label for="post-link">Post Link:</label>
+        <input type="text" name='post-link' id="post-link" required>
+
+        <label for="post-des">Post Description:</label>
+        <textarea type="text" name='post-des' id="post-des" required></textarea>
+
+        <button type="submit">Create Post</button>
+
+    </form>
+
+    <h2>Post</h2>
+    <div id="main-div"></div>
+
+
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            axios.get('http://localhost:3000/submit')
+            .then(res=>{
+                for(i=0;i<res.data.postdata.length;i++){
+                    showonscreen(res.data.postdata[i])
+                }
+               //console.log(res.data.postdata.length)
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        });
+
+        function formSubmit(event){
+            event.preventDefault();
+
+            const link=document.getElementById('post-link').value
+            const des=document.getElementById('post-des').value
+
+            //console.log(link,des)
+
+            axios.post('http://localhost:3000/submit', {
+                link:link,
+                des:des
+            })
+            .then(res=>{
+                //console.log(res)
+                showonscreen(res.data)
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+            
+        }
+        function showonscreen(x){
+            //console.log(x.comments)
+
+            
+            const mainDiv=document.getElementById('main-div')
+            const newDiv=document.createElement('div')
+            newDiv.id=`div${x.id}`
+            const image=document.createElement('img')
+            image.src=x.link
+            image.style.maxWidth = '100%'
+
+            const des=document.createElement('h3')
+            des.textContent=`Description - ${x.des}`
+
+
+
+            //////////////////////////////////comment
+
+            const form=document.createElement('form')
+            form.id=`form${x.id}`
+
+            const commenthead=document.createElement('h3')
+            commenthead.textContent='Comments'
+
+            const input=document.createElement('input')
+            input.id=`maininput${x.id}`
+            
+            const input2=document.createElement('input')
+            input2.value=x.id
+            input2.type='hidden';
+            input2.id='valueinput'
+
+            const button=document.createElement('button')
+            button.type="submit";
+            button.textContent='Submit'
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission (if inside a form)
+                const inputvalue = input.value
+                const inputvalue2=input2.value
+                comment(inputvalue,inputvalue2); // Print the value to console
+            });
+
+            form.appendChild(commenthead)
+            form.appendChild(input2)
+            form.appendChild(input)
+            form.appendChild(button)
+
+
+
+            //////////////////////////////////////////
+            newDiv.appendChild(image)
+            newDiv.appendChild(des)
+            newDiv.appendChild(form)
+
+            mainDiv.appendChild(newDiv)
+
+            for(let i=x.comments.length-1;i>=0;i--){
+                showonscreen2(x.comments[i],x.id)
+            }
+
+        }
+        function comment(x,y){
+            //console.log(x,y)
+            axios.post('http://localhost:3000/comment', {
+                postId:y,
+                comment:x
+            })
+            .then(res=>{
+                //console.log(res.data)
+                showonscreen2(res.data,res.data.postId)
+            })
+        }
+        function showonscreen2(x,y){
+            //console.log(x,y)
+            const div=document.getElementById(`div${y}`)
+
+            const head=document.createElement('h3')
+            head.textContent=`Anonmous-${x.comment}`
+
+            div.appendChild(head)
+        }
+    </script>
+</body>
+</html>
